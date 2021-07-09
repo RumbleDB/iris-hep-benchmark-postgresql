@@ -1,9 +1,8 @@
 -- Drop the table if it already exists
-DROP TABLE IF EXISTS Run2012B_SingleMu CASCADE;
-DROP TYPE IF EXISTS metType, hltType, pvType, muonType, electronType, photonType, jetType, tauType, eventType CASCADE;
+DROP TABLE IF EXISTS Run2012B_SingleMu_%(data_size)s_raw CASCADE;
 
 -- Creates the `Run2012B_SingleMu` schema
-CREATE TABLE  IF NOT EXISTS Run2012B_SingleMu (
+CREATE TABLE IF NOT EXISTS Run2012B_SingleMu_%(data_size)s_raw (
 	run  INTEGER,
 	luminosityBlock  BIGINT,
 	event  BIGINT,
@@ -92,128 +91,9 @@ CREATE TABLE  IF NOT EXISTS Run2012B_SingleMu (
 	Jet_btag  DOUBLE PRECISION []
 );
 
--- Create the particle types
-CREATE TYPE metType AS (
-    pt             DOUBLE PRECISION,
-    phi            DOUBLE PRECISION,
-    sumet          DOUBLE PRECISION,
-    significance   DOUBLE PRECISION,
-    CovXX          DOUBLE PRECISION,
-    CovXY          DOUBLE PRECISION,
-    CovYY          DOUBLE PRECISION
-);
-
-CREATE TYPE hltType AS (
-    IsoMu24_eta2p1                 BOOLEAN,
-    IsoMu24                        BOOLEAN,
-    IsoMu17_eta2p1_LooseIsoPFTau20 BOOLEAN
-);
-
-CREATE TYPE pvType AS (
-    npvs   INTEGER,
-    x      DOUBLE PRECISION,
-    y      DOUBLE PRECISION,
-    z      DOUBLE PRECISION
-);
-
-CREATE TYPE muonType AS (
-    pt             DOUBLE PRECISION,
-    eta            DOUBLE PRECISION,
-    phi            DOUBLE PRECISION,
-    mass           DOUBLE PRECISION,
-    charge         INTEGER,
-    pfRelIso03_all DOUBLE PRECISION,
-    pfRelIso04_all DOUBLE PRECISION,
-    tightId        BOOLEAN,
-    softId         BOOLEAN,
-    dxy            DOUBLE PRECISION,
-    dxyErr         DOUBLE PRECISION,
-    dz             DOUBLE PRECISION,
-    dzErr          DOUBLE PRECISION,
-    jetIdx		   INTEGER,
-    genPartIdx     INTEGER
-);
-
-CREATE TYPE electronType AS (
-    pt             DOUBLE PRECISION,
-    eta            DOUBLE PRECISION,
-    phi            DOUBLE PRECISION,
-    mass           DOUBLE PRECISION,
-    charge         INTEGER,
-    pfRelIso03_all DOUBLE PRECISION,
-    dxy            DOUBLE PRECISION,
-    dxyErr         DOUBLE PRECISION,
-    dz             DOUBLE PRECISION,
-    dzErr          DOUBLE PRECISION,
-    cutBasedId     BOOLEAN,
-    pfId           BOOLEAN,
-    jetIdx    	   INTEGER,
-    genPartIdx     INTEGER
-);
-
-CREATE TYPE photonType AS (
-    pt             DOUBLE PRECISION,
-    eta            DOUBLE PRECISION,
-    phi            DOUBLE PRECISION,
-    mass           DOUBLE PRECISION,
-    charge         INTEGER,
-    pfRelIso03_all DOUBLE PRECISION,
-    jetIdx  	   INTEGER,
-    genPartIdx     INTEGER
-);
-
-CREATE TYPE jetType AS (
-    pt     DOUBLE PRECISION,
-    eta    DOUBLE PRECISION,
-    phi    DOUBLE PRECISION,
-    mass   DOUBLE PRECISION,
-    puId   BOOLEAN,
-    btag   DOUBLE PRECISION
-);
-
-CREATE TYPE tauType AS (
-    pt                 DOUBLE PRECISION,
-    eta                DOUBLE PRECISION,
-    phi                DOUBLE PRECISION,
-    mass               DOUBLE PRECISION,
-    charge             INTEGER,
-    decayMode          INTEGER,
-    relIso_all         DOUBLE PRECISION,  -- XXX This attribute contains null values. Not sure why...
-    jetIdx             INTEGER,
-    genPartIdx         INTEGER,
-    idDecayMode        BOOLEAN,
-    idIsoRaw           DOUBLE PRECISION,
-    idIsoVLoose        BOOLEAN,
-    idIsoLoose         BOOLEAN,
-    idIsoMedium        BOOLEAN,
-    idIsoTight         BOOLEAN,
-    idAntiEleLoose     BOOLEAN,
-    idAntiEleMedium    BOOLEAN,
-    idAntiEleTight     BOOLEAN,
-    idAntiMuLoose      BOOLEAN,
-    idAntiMuMedium     BOOLEAN,
-    idAntiMuTight      BOOLEAN
-);
-
-CREATE TYPE eventType AS (
-    run                INTEGER,
-    luminosityBlock    BIGINT,
-    event              BIGINT,
-    MET                metType,
-    HLT                hltType,
-    PV                 pvType,
-    Muon               muonType [],
-    Electron           electronType [],
-    Photon             photonType [],
-    Jet                jetType [],
-    Tau                tauType []
-);
-
-
--- SELECT event, array( (SELECT ROW(Muon_pt, Muon_eta) FROM UNNEST(Muon_pt, Muon_eta)) ) AS arr FROM Run2012B_SingleMu;
 
 -- Create the view
-CREATE VIEW Run2012B_SingleMu_event AS
+CREATE VIEW Run2012B_SingleMu_%(data_size)s AS
 SELECT RUN, 
 	   luminosityBlock, 
 	   event,
@@ -222,9 +102,21 @@ SELECT RUN,
 	   CAST (ROW(PV_npvs, PV_x, PV_y, PV_z) AS pvType) AS PV,
 	   array(
 	   	(SELECT CAST(ROW(pt,eta,phi,mass,charge,pfRelIso03_all,pfRelIso04_all,tightId,softId,dxy,dxyErr,dz,dzErr,jetIdx,genPartIdx) AS muonType) FROM UNNEST(Muon_pt, Muon_eta, Muon_phi, Muon_mass, Muon_charge, Muon_pfRelIso03_all, Muon_pfRelIso04_all, Muon_tightId, Muon_softId, Muon_dxy, Muon_dxyErr, Muon_dz, Muon_dzErr, Muon_jetIdx, Muon_genPartIdx) AS t(pt,eta,phi,mass,charge,pfRelIso03_all,pfRelIso04_all,tightId,softId,dxy,dxyErr,dz,dzErr,jetIdx,genPartIdx))
-	   ) AS Muon
-FROM Run2012B_SingleMu;
+	   ) AS Muon,
+	   array(
+	   	(SELECT CAST(ROW(pt, eta, phi, mass, charge, pfRelIso03_all, dxy, dxyErr, dz, dzErr, cutBasedId, pfId, jetIdx, genPartIdx) AS electronType) FROM UNNEST(Electron_pt, Electron_eta, Electron_phi, Electron_mass, Electron_charge, Electron_pfRelIso03_all, Electron_dxy, Electron_dxyErr, Electron_dz, Electron_dzErr, Electron_cutBasedId, Electron_pfId, Electron_jetIdx, Electron_genPartIdx) AS t(pt, eta, phi, mass, charge, pfRelIso03_all, dxy, dxyErr, dz, dzErr, cutBasedId, pfId, jetIdx, genPartIdx))
+	   ) AS Electron,
+	   array(
+	   	(SELECT CAST(ROW(pt, eta, phi, mass, charge, pfRelIso03_all, jetIdx, genPartIdx) AS photonType) FROM UNNEST(Photon_pt, Photon_eta, Photon_phi, Photon_mass, Photon_charge, Photon_pfRelIso03_all, Photon_jetIdx, Photon_genPartIdx) AS t(pt, eta, phi, mass, charge, pfRelIso03_all, jetIdx, genPartIdx))
+	   ) AS Photon,
+	   array(
+	   	(SELECT CAST(ROW(pt, eta, phi, mass, puId, btag) AS jetType) FROM UNNEST(Jet_pt, Jet_eta, Jet_phi, Jet_mass, Jet_puId, Jet_btag) AS t(pt, eta, phi, mass, puId, btag))
+	   ) AS Jet,
+	   array(
+	   	(SELECT CAST(ROW(pt, eta, phi, mass, charge, decayMode, relIso_all, jetIdx, genPartIdx, idDecayMode, idIsoRaw, idIsoVLoose, idIsoLoose, idIsoMedium, idIsoTight, idAntiEleLoose, idAntiEleMedium, idAntiEleTight, idAntiMuLoose, idAntiMuMedium, idAntiMuTight) AS tauType) FROM UNNEST(Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_charge, Tau_decayMode, Tau_relIso_all, Tau_jetIdx, Tau_genPartIdx, Tau_idDecayMode, Tau_idIsoRaw, Tau_idIsoVLoose, Tau_idIsoLoose, Tau_idIsoMedium, Tau_idIsoTight, Tau_idAntiEleLoose, Tau_idAntiEleMedium, Tau_idAntiEleTight, Tau_idAntiMuLoose, Tau_idAntiMuMedium, Tau_idAntiMuTight) AS t(pt, eta, phi, mass, charge, decayMode, relIso_all, jetIdx, genPartIdx, idDecayMode, idIsoRaw, idIsoVLoose, idIsoLoose, idIsoMedium, idIsoTight, idAntiEleLoose, idAntiEleMedium, idAntiEleTight, idAntiMuLoose, idAntiMuMedium, idAntiMuTight))
+	   ) AS Tau
+FROM Run2012B_SingleMu_%(data_size)s_raw;
 
 
 -- Import the data into the DB
-COPY Run2012B_SingleMu FROM '/home/dan/data/garbage/iris-hep-benchmark-postgresql/data/Run2012B_SingleMu-1000.csv' WITH (FORMAT csv, HEADER, ENCODING 'UTF-8');
+COPY Run2012B_SingleMu_%(data_size)s_raw FROM '%(data_path)s' WITH (FORMAT csv, HEADER, ENCODING 'UTF-8');
