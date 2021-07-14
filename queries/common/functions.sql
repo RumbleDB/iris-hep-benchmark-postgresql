@@ -24,10 +24,3 @@ BEGIN
     ORDER BY x;
 END;
 $$ LANGUAGE plpgsql;
-
-
-
-SELECT 'DROP FUNCTION ' || ns.nspname || '.' || proname 
-       || '(' || oidvectortypes(proargtypes) || ');'
-FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid)
-order by proname;
