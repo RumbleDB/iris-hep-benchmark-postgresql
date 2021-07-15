@@ -7,8 +7,8 @@ BEGIN
       WHEN v < lo THEN lo - bin_width / 4
       WHEN v > hi THEN hi + bin_width / 4
       ELSE v
-    END - MOD(lo, bin_width)) / bin_width) * bin_width + bin_width / 2 
-      + MOD(lo, bin_width);
+    END - MOD(CAST(lo AS NUMERIC), CAST(bin_width AS NUMERIC))) / bin_width) * bin_width + bin_width / 2 
+      + MOD(CAST(lo AS NUMERIC), CAST(bin_width AS NUMERIC));
 END; 
 $$ LANGUAGE plpgsql;
 
@@ -22,5 +22,12 @@ BEGIN
     FROM (SELECT UNNEST(vals)) as tmp (v)
     GROUP BY x
     ORDER BY x;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION INVARIANT_MASS(IN p1 anyelement, IN p2 anyelement)
+RETURNS DOUBLE PRECISION AS $$
+BEGIN
+  RETURN SQRT(2 * p1.pt * p2.pt * (COSH(p1.eta - p2.eta) - COS(p1.phi - p2.phi)));
 END;
 $$ LANGUAGE plpgsql;

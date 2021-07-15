@@ -66,6 +66,7 @@ def test_query(query_id, pytestconfig, psqldb):
     df = df[['x', 'y']]
     df.x = df.x.round(6)
     df.reset_index(drop=True, inplace=True)
+    print(df)
 
     # Freeze reference result
     if pytestconfig.getoption('freeze_result'):
