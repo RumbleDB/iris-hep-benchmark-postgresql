@@ -156,29 +156,3 @@ BEGIN
   RETURN SQRT((p1_eta - p2_eta) ^ 2.0 + DELTA_PHI(p1_phi, p2_phi) ^ 2.0);
 END;
 $$ LANGUAGE plpgsql;
-
-
--- CREATE OR REPLACE FUNCTION DELTA_PHI_HELPER(IN delta_phi DOUBLE PRECISION)
--- RETURNS DOUBLE PRECISION AS $$
--- BEGIN
---   RETURN CASE
---     WHEN delta_phi < -PI() THEN delta_phi + 2 * PI()
---     WHEN delta_phi >  PI() THEN delta_phi - 2 * PI()
---     ELSE delta_phi
---   END;
--- END;
--- $$ LANGUAGE plpgsql;
-
--- CREATE OR REPLACE FUNCTION DELTA_PHI(IN p1 anyelement, IN p2 anyelement)
--- RETURNS DOUBLE PRECISION AS $$
--- BEGIN
---   RETURN DELTA_PHI_HELPER(MOD((p1).phi - (p2).phi, 2 * PI()));
--- END;
--- $$ LANGUAGE plpgsql;
-
--- CREATE OR REPLACE FUNCTION DELTA_R(IN p1 anyelement, IN p2 anyelement)
--- RETURNS DOUBLE PRECISION AS $$
--- BEGIN
---   RETURN SQRT((p1.eta - p2.eta) ^ 2.0 + DELTA_PHI(p1, p2) ^ 2.0);
--- END;
--- $$ LANGUAGE plpgsql;

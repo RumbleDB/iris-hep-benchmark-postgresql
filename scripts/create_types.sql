@@ -1,5 +1,5 @@
 -- Remove the types if they already exist
--- DROP TYPE IF EXISTS metType, hltType, pvType, muonType, electronType, photonType, jetType, tauType, eventType, quadType, pepmType CASCADE;
+-- DROP TYPE IF EXISTS metType, hltType, pvType, muonType, electronType, photonType, jetType, tauType, eventType, quadType, pepmType, quadType, pepmType, triJetType, leptonType CASCADE;
 
 -- Create the particle types
 CREATE TYPE metType AS (
@@ -127,8 +127,5 @@ CREATE TYPE pepmType AS (pt DOUBLE PRECISION, eta DOUBLE PRECISION,
 CREATE TYPE triJetType AS (triJet pepmType, btag1 DOUBLE PRECISION, 
   btag2 DOUBLE PRECISION, btag3 DOUBLE PRECISION);
 CREATE TYPE leptonType AS (pt DOUBLE PRECISION, eta DOUBLE PRECISION, 
-  phi DOUBLE PRECISION, mass DOUBLE PRECISION, charge DOUBLE PRECISION, type CHARACTER);
-CREATE TYPE triLeptonType AS (l1 leptonType, l2 leptonType, l3 leptonType);
-CREATE TYPE thirdLeptonType AS (pt DOUBLE PRECISION, eta DOUBLE PRECISION, 
   phi DOUBLE PRECISION, mass DOUBLE PRECISION, charge DOUBLE PRECISION, 
-  type CHARACTER, idx INTEGER);
+  type CHARACTER);
