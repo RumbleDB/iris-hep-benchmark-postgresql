@@ -33,9 +33,6 @@ parser.add_argument('--foreign-table', action='store_true',
 parser.add_argument('-S', '--data-size', action='store',
                     default=1000, 
                     help='The size of the imported dataset')
-parser.add_argument('-p', '--path', action='store',
-                    default='/home/dan/data/garbage/iris-hep-benchmark-postgresql/data/Run2012B_SingleMu-1000.csv',
-                    help='The path where the file is located')
 
 add_log_level_argument(parser)
 args = parser.parse_args()
@@ -43,8 +40,6 @@ args = parser.parse_args()
 
 conf = {
   "data_size": args.data_size,
-  "data_path": args.path,
-  "foreign_table": args.foreign_table
 }
 
 # Start the process of creating the table
