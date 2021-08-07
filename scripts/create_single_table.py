@@ -10,6 +10,7 @@ from psqldb import Psql
 
 CREATE_TYPES_SCRIPT = "create_types.sql"
 CREATE_TABLE_SCRIPT = "create_table.sql"
+CREATE_FOREIGN_TABLE_SCRIPT = "create_table_foreign.sql"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', '--psql-server', action='store',
@@ -17,16 +18,18 @@ parser.add_argument('-s', '--psql-server', action='store',
                     help='URL as <host>:<port> of the Postgresql REST '
                          'interface.')
 parser.add_argument('-u', '--user', action="store",
-                    default="dan",
+                    default="user",
                     help="The username required to log into psql")
 parser.add_argument('-P', '--password', action="store",
                     default="password",
                     help="The password required to log into psql")
 parser.add_argument('-d', '--database', action="store",
-                    default="",
+                    default="user",
                     help="The database required to log into psql")
 parser.add_argument('--create-types', action='store_true',
                     help='If specified, creates the particle types')
+parser.add_argument('--foreign-table', action='store_true',
+                    help='If specified, creates a foreign table')
 parser.add_argument('-S', '--data-size', action='store',
                     default=1000, 
                     help='The size of the imported dataset')
@@ -40,7 +43,8 @@ args = parser.parse_args()
 
 conf = {
   "data_size": args.data_size,
-  "data_path": args.path
+  "data_path": args.path,
+  "foreign_table": args.foreign_table
 }
 
 # Start the process of creating the table
@@ -51,13 +55,15 @@ psql = Psql(args.user, args.password, args.database)
 if args.create_types:
   with open(join(base_dir, CREATE_TYPES_SCRIPT), "r") as f:
     query = f.read()
-  psql.run(query)
+  psql.run_no_results(query)
 
 # Create the requested table 
-with open(join(base_dir, CREATE_TABLE_SCRIPT), "r") as f:
+table_creation_script = CREATE_FOREIGN_TABLE_SCRIPT if args.foreign_table else \
+  CREATE_TABLE_SCRIPT
+with open(join(base_dir, table_creation_script), "r") as f:
   query = f.read()
 query = query % conf
-psql.run(query)
+psql.run_no_results(query)
 
 # Close the executor
 psql.close()

@@ -73,3 +73,9 @@ class Psql:
 
     return (new_res, stats)
 
+  
+  def run_no_results(self, query):
+    # Execute the query and get the results
+    with self.connection.cursor() as cursor:
+      cursor.execute(query)
+

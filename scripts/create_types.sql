@@ -1,5 +1,5 @@
 -- Remove the types if they already exist
--- DROP TYPE IF EXISTS metType, hltType, pvType, muonType, electronType, photonType, jetType, tauType, eventType, quadType, pepmType, quadType, pepmType, triJetType, leptonType CASCADE;
+DROP TYPE IF EXISTS metType, hltType, pvType, muonType, electronType, photonType, jetType, tauType, eventType, quadType, pepmType, quadType, pepmType, triJetType, leptonType CASCADE;
 
 -- Create the particle types
 CREATE TYPE metType AS (
