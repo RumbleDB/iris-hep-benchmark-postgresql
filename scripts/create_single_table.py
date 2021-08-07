@@ -51,13 +51,13 @@ psql = Psql(args.user, args.password, args.database)
 if args.create_types:
   with open(join(base_dir, CREATE_TYPES_SCRIPT), "r") as f:
     query = f.read()
-  psql.run(query, fetch=False)
+  psql.run(query)
 
 # Create the requested table 
 with open(join(base_dir, CREATE_TABLE_SCRIPT), "r") as f:
   query = f.read()
 query = query % conf
-psql.run(query, fetch=False)
+psql.run(query)
 
 # Close the executor
 psql.close()

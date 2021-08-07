@@ -49,7 +49,7 @@ def test_query(query_id, pytestconfig, psqldb):
 
     # Run query and read result
     start_timestamp = time.time()
-    result = psqldb.run(query)
+    result, _ = psqldb.run(query)  # Discard the stats
     end_timestamp = time.time()
 
     running_time = end_timestamp - start_timestamp
