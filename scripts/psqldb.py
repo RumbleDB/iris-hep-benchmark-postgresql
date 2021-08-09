@@ -35,7 +35,7 @@ class Psql:
     self.user = user 
     self.password = password 
     self.db_name = db_name
-    self.stats_path = stats_path if stats_path else "query.log"
+    self.stats_path = stats_path if stats_path else "/data/query.log"
 
     if not self.db_name:
       self.connection = psycopg2.connect(user=self.user, 
