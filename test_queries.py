@@ -45,7 +45,9 @@ def test_query(query_id, pytestconfig, psqldb):
     # Read function library
     with open(lib_file, 'r') as f:
         lib = f.read()
-    query = lib + '\n' + query
+
+    # Note: we're adding a metric table reset to get the right metrics later on
+    query = lib + '\nSELECT pg_stat_statements_reset();\n' + query
 
     # Run query and read result
     start_timestamp = time.time()

@@ -30,10 +30,12 @@ STATS_COLS = {
 
 
 class Psql:
-  def __init__(self, user, password, db_name=None, autocommit=True):
+  def __init__(self, user, password, stats_path=None, db_name=None, 
+    autocommit=True):
     self.user = user 
     self.password = password 
     self.db_name = db_name
+    self.stats_path = stats_path if stats_path else "query.log"
 
     if not self.db_name:
       self.connection = psycopg2.connect(user=self.user, 
@@ -62,14 +64,15 @@ class Psql:
     
     # Get the statistics around this query
     with self.connection.cursor() as cursor:
-      cursor.execute("SELECT * FROM pg_stat_statements LIMIT 1;")
+      cursor.execute("SELECT * FROM pg_stat_statements AS p WHERE p.query LIKE 'SELECT HISTOGRAM%' LIMIT 1;")
       res = cursor.fetchall()
       colnames = [desc[0] for desc in cursor.description]
     
     stats = {}
     for idx, stat in enumerate(res[0]):
       stats[colnames[idx]] = stat
-    print(stats)
+    with open(self.stats_path, "w") as f:
+      json.dump(stats, f)
 
     return (new_res, stats)
 
