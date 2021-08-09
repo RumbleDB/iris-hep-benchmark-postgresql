@@ -9,11 +9,14 @@ def pytest_addoption(parser):
                      help='Whether the results of the query should be '
                           'persisted to disk.')
     parser.addoption('-U', '--user', action="store",
-                        default="dan",
+                        default="user",
                         help="The username required to log into psql")
     parser.addoption('-P', '--password', action="store",
                         default="password",
                         help="The password required to log into psql")
+    parser.addoption('-D', '--database', action="store",
+                        default="user",
+                        help="The database required to log into psql")
     parser.addoption('-N', '--num-events', action='store', default=1000,
                      help='Number of events taken from the input file. '
                           'This influences which reference file should be '
