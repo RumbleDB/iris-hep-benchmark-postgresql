@@ -34,6 +34,7 @@ RETURNS DOUBLE PRECISION AS $$
 BEGIN
   RETURN SQRT(2 * p1.pt * p2.pt * (COSH(p1.eta - p2.eta) - COS(p1.phi - p2.phi)));
 END;
+$$ 
 PARALLEL SAFE
 LANGUAGE plpgsql;
 
