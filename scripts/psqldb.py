@@ -41,14 +41,14 @@ class Psql:
     stats = {}
     with self.connection.cursor() as cursor:
       stats["bytes_prior"], stats["disk_stats_prior"] = \
-        _read_diskstats(self.disk_name)
+        self._read_diskstats(self.disk_name)
 
       start_time = time.time()
       cursor.execute(query)
       stats["internal_elapsed_time_s"] = time.time() - start_time
 
       stats["bytes_posterior"], stats["disk_stats_posterior"] = \
-        _read_diskstats(self.disk_name)
+        self._read_diskstats(self.disk_name)
       stats["internal_read_bytes"] = stats["bytes_posterior"] - \
         stats["bytes_prior"]
       res = cursor.fetchall()
