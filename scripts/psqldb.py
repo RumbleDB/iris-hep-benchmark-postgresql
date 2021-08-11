@@ -1,41 +1,16 @@
 import json
 import psycopg2
-
-
-STATS_COLS = {
-  "userid",
-  "dbid",
-  "queryid",
-  "query",
-  "calls",
-  "total_time",
-  "min_time",
-  "max_time",
-  "mean_time",
-  "stddev_time",
-  "rows",
-  "shared_blks_hit",
-  "shared_blks_read",
-  "shared_blks_dirtied",
-  "shared_blks_written",
-  "local_blks_hit",
-  "local_blks_read",
-  "local_blks_dirtied",
-  "local_blks_written",
-  "temp_blks_read",
-  "temp_blks_written",
-  "blk_read_time",
-  "blk_write_time"
-}
+import time
 
 
 class Psql:
   def __init__(self, user, password, stats_path=None, db_name=None, 
-    autocommit=True):
+    autocommit=True, disk_name="nvme1n1"):
     self.user = user 
     self.password = password 
     self.db_name = db_name
     self.stats_path = stats_path if stats_path else "/data/query.log"
+    self.disk_name = disk_name
 
     if not self.db_name:
       self.connection = psycopg2.connect(user=self.user, 
@@ -47,13 +22,35 @@ class Psql:
 
     self.connection.autocommit = autocommit
 
+
+  @staticmethod
+  def _read_diskstats(disk_name, sector_size_bytes=512):
+    with open("/proc/diskstats") as f:
+      lines = [x.split() for x in f.readlines()]
+
+    line = [x for x in lines if x[2] == disk_name][0]
+    return int(line[5]) * sector_size_bytes, line
+
+
   def close(self):
     self.connection.close()
 
+
   def run(self, query):
     # Execute the query and get the results
+    stats = {}
     with self.connection.cursor() as cursor:
+      stats["bytes_prior"], stats["disk_stats_prior"] = \
+        _read_diskstats(self.disk_name)
+
+      start_time = time.time()
       cursor.execute(query)
+      stats["internal_elapsed_time_s"] = time.time() - start_time
+
+      stats["bytes_posterior"], stats["disk_stats_posterior"] = \
+        _read_diskstats(self.disk_name)
+      stats["internal_read_bytes"] = stats["bytes_posterior"] - \
+        stats["bytes_prior"]
       res = cursor.fetchall()
 
     # Make the results numpy compatible
@@ -68,7 +65,6 @@ class Psql:
       res = cursor.fetchall()
       colnames = [desc[0] for desc in cursor.description]
     
-    stats = {}
     for idx, stat in enumerate(res[0]):
       stats[colnames[idx]] = stat
     with open(self.stats_path, "w") as f:
