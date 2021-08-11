@@ -39,7 +39,7 @@ CREATE TYPE muonType AS (
     dxyErr         DOUBLE PRECISION,
     dz             DOUBLE PRECISION,
     dzErr          DOUBLE PRECISION,
-    jetIdx		   INTEGER,
+    jetIdx         INTEGER,
     genPartIdx     INTEGER
 );
 
@@ -56,7 +56,7 @@ CREATE TYPE electronType AS (
     dzErr          DOUBLE PRECISION,
     cutBasedId     BOOLEAN,
     pfId           BOOLEAN,
-    jetIdx    	   INTEGER,
+    jetIdx         INTEGER,
     genPartIdx     INTEGER
 );
 
@@ -67,7 +67,7 @@ CREATE TYPE photonType AS (
     mass           DOUBLE PRECISION,
     charge         INTEGER,
     pfRelIso03_all DOUBLE PRECISION,
-    jetIdx  	   INTEGER,
+    jetIdx         INTEGER,
     genPartIdx     INTEGER
 );
 
@@ -124,8 +124,8 @@ CREATE TYPE quadType AS (x DOUBLE PRECISION, y DOUBLE PRECISION,
   z DOUBLE PRECISION, t DOUBLE PRECISION);
 CREATE TYPE pepmType AS (pt DOUBLE PRECISION, eta DOUBLE PRECISION,
   phi DOUBLE PRECISION, mass DOUBLE PRECISION);
-CREATE TYPE triJetType AS (triJet pepmType, btag1 DOUBLE PRECISION, 
+CREATE TYPE triJetType AS (triJet pepmType, btag1 DOUBLE PRECISION,
   btag2 DOUBLE PRECISION, btag3 DOUBLE PRECISION);
-CREATE TYPE leptonType AS (pt DOUBLE PRECISION, eta DOUBLE PRECISION, 
-  phi DOUBLE PRECISION, mass DOUBLE PRECISION, charge DOUBLE PRECISION, 
+CREATE TYPE leptonType AS (pt DOUBLE PRECISION, eta DOUBLE PRECISION,
+  phi DOUBLE PRECISION, mass DOUBLE PRECISION, charge DOUBLE PRECISION,
   type CHARACTER);
