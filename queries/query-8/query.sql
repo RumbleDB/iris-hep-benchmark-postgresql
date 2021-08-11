@@ -4,7 +4,7 @@ SELECT HISTOGRAM((
     array_cat(
       (SELECT array_agg(CAST(ROW(x.pt, x.eta, x.phi, x.mass, x.charge, 'm') AS leptonType)) FROM UNNEST(e.Muon) as x),
       (SELECT array_agg(CAST(ROW(x.pt, x.eta, x.phi, x.mass, x.charge, 'e') AS leptonType)) FROM UNNEST(e.Electron) as x)) AS Lepton
-  FROM Run2012B_SingleMu_1000 AS e
+  FROM %(input_table)s AS e
   ), EventsWithTriLeptons AS (
     SELECT e.*, l1, l2, 
         (SELECT CAST(ROW(l3.pt, l3.eta, l3.phi, l3.mass, l3.charge, 'x') AS leptonType)
