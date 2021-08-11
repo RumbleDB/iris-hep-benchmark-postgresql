@@ -120,3 +120,6 @@ SELECT RUN,
 	   	(SELECT CAST(ROW(pt, eta, phi, mass, charge, decayMode, relIso_all, jetIdx, genPartIdx, idDecayMode, idIsoRaw, idIsoVLoose, idIsoLoose, idIsoMedium, idIsoTight, idAntiEleLoose, idAntiEleMedium, idAntiEleTight, idAntiMuLoose, idAntiMuMedium, idAntiMuTight) AS tauType) FROM UNNEST(Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_charge, Tau_decayMode, Tau_relIso_all, Tau_jetIdx, Tau_genPartIdx, Tau_idDecayMode, Tau_idIsoRaw, Tau_idIsoVLoose, Tau_idIsoLoose, Tau_idIsoMedium, Tau_idIsoTight, Tau_idAntiEleLoose, Tau_idAntiEleMedium, Tau_idAntiEleTight, Tau_idAntiMuLoose, Tau_idAntiMuMedium, Tau_idAntiMuTight) AS t(pt, eta, phi, mass, charge, decayMode, relIso_all, jetIdx, genPartIdx, idDecayMode, idIsoRaw, idIsoVLoose, idIsoLoose, idIsoMedium, idIsoTight, idAntiEleLoose, idAntiEleMedium, idAntiEleTight, idAntiMuLoose, idAntiMuMedium, idAntiMuTight))
 	   ) AS Tau
 FROM Run2012B_SingleMu_%(data_size)s_raw;
+
+ANALYZE Run2012B_SingleMu_%(data_size)s_raw;
+ANALYZE Run2012B_SingleMu_%(data_size)s;

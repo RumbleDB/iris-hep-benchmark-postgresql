@@ -120,3 +120,6 @@ FROM Run2012B_SingleMu_%(data_size)s_raw;
 
 -- Import the data into the DB
 COPY Run2012B_SingleMu_%(data_size)s_raw FROM '%(data_path)s' WITH (FORMAT csv, HEADER, ENCODING 'UTF-8');
+
+ANALYZE Run2012B_SingleMu_%(data_size)s_raw;
+ANALYZE Run2012B_SingleMu_%(data_size)s;
