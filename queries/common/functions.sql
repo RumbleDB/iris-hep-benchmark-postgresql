@@ -10,7 +10,9 @@ BEGIN
     END - MOD(CAST(lo AS NUMERIC), CAST(bin_width AS NUMERIC))) / bin_width) * bin_width + bin_width / 2 
       + MOD(CAST(lo AS NUMERIC), CAST(bin_width AS NUMERIC));
 END; 
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION HISTOGRAM(IN vals DOUBLE PRECISION [], IN lo DOUBLE PRECISION, 
@@ -23,21 +25,26 @@ BEGIN
     GROUP BY x
     ORDER BY x;
 END;
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION INVARIANT_MASS(IN p1 anyelement, IN p2 anyelement)
 RETURNS DOUBLE PRECISION AS $$
 BEGIN
   RETURN SQRT(2 * p1.pt * p2.pt * (COSH(p1.eta - p2.eta) - COS(p1.phi - p2.phi)));
 END;
-$$ LANGUAGE plpgsql;
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION Rho_Z2_Eta(IN rho DOUBLE PRECISION, IN z DOUBLE PRECISION)
 RETURNS DOUBLE PRECISION AS $$
 BEGIN
   RETURN LN(z / rho + SQRT(z / rho * z / rho + 1.0));
 END;
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION PT_ETA_PHI_M2_PxPyPzE(IN pepm anyelement) 
@@ -50,7 +57,9 @@ BEGIN
   INTO result_record.x, result_record.y, result_record.z, result_record.t;
   RETURN result_record;
 END;
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION Px_Py_Pz_E2_Pt_Eta_Phi_M(IN xyzt anyelement) 
 RETURNS pepmType AS $$
@@ -65,7 +74,9 @@ BEGIN
   INTO result_record.pt, result_record.eta, result_record.phi, result_record.mass; 
   RETURN result_record;
 END;
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION ADD_Px_Py_Pz_E3(IN xyzt1 anyelement, 
@@ -79,7 +90,9 @@ BEGIN
   INTO result_record.x, result_record.y, result_record.z, result_record.t;
   RETURN result_record;
 END;
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION ADD_Px_Py_Pz_E2(IN xyzt1 anyelement, 
   IN xyzt2 anyelement) 
@@ -92,7 +105,9 @@ BEGIN
   INTO result_record.x, result_record.y, result_record.z, result_record.t;
   RETURN result_record;
 END;
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION ADD_PT_ETA_PHI_M3(IN pepm1 anyelement, 
   IN pepm2 anyelement, IN pepm3 anyelement) 
@@ -104,7 +119,9 @@ BEGIN
       PT_ETA_PHI_M2_PxPyPzE(pepm2),
       PT_ETA_PHI_M2_PxPyPzE(pepm3)));
 END;
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION ADD_PT_ETA_PHI_M2(IN pepm1 anyelement, 
   IN pepm2 anyelement) 
@@ -115,7 +132,9 @@ BEGIN
       PT_ETA_PHI_M2_PxPyPzE(pepm1),
       PT_ETA_PHI_M2_PxPyPzE(pepm2)));
 END;
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION ADD_PT_ETA_PHI_M3(IN pepm1 anyelement, 
   IN pepm2 anyelement, IN pepm3 anyelement) 
@@ -127,7 +146,9 @@ BEGIN
       PT_ETA_PHI_M2_PxPyPzE(pepm2),
       PT_ETA_PHI_M2_PxPyPzE(pepm3)));
 END;
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION DELTA_PHI(IN p1_phi DOUBLE PRECISION, 
@@ -144,7 +165,9 @@ BEGIN
     ELSE tmp
   END;
 END;
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION DELTA_R(IN p1_eta DOUBLE PRECISION, 
@@ -155,4 +178,6 @@ DECLARE
 BEGIN  
   RETURN SQRT((p1_eta - p2_eta) ^ 2.0 + DELTA_PHI(p1_phi, p2_phi) ^ 2.0);
 END;
-$$ LANGUAGE plpgsql;
+$$ 
+PARALLEL SAFE
+LANGUAGE plpgsql;
