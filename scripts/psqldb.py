@@ -59,7 +59,8 @@ class Psql:
       res_stats = cursor.fetchall()
       colnames = [desc[0] for desc in cursor.description]
 
-    for idx, stat in enumerate(res_stats[0]):
+    res_stats = res_stats[0][:-1]
+    for idx, stat in enumerate(res_stats):
       stats[colnames[idx]] = stat
     with open(self.stats_path, "w") as f:
       json.dump(stats, f)
