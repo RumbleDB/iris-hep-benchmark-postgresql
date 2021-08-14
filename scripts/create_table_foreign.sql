@@ -92,7 +92,7 @@ CREATE FOREIGN TABLE IF NOT EXISTS Run2012B_SingleMu_%(data_size)s_raw (
 )
 SERVER parquet_srv
 OPTIONS (
-    filename '/home/dan/data/garbage/iris-hep-benchmark-postgresql/data/Run2012B_SingleMu-1000.parquet'
+    filename '/data/Run2012B_SingleMu_%(data_size)s.parquet'
 );
 
 
