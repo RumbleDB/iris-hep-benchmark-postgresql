@@ -8,6 +8,8 @@ from argparse_logging import add_log_level_argument
 
 from psqldb import Psql
 
+SF1 = 1000 * 2 ** 16
+
 CREATE_TYPES_SCRIPT = "create_types.sql"
 CREATE_TABLE_SCRIPT = "create_table.sql"
 CREATE_FOREIGN_TABLE_SCRIPT = "create_table_foreign.sql"
@@ -43,7 +45,7 @@ args = parser.parse_args()
 
 conf = {
   "data_size": args.data_size,
-  "data_path": args.path
+  "data_path": ' '.join([args.path for _ in range(max(1, args.data_size / SF1))])
 }
 
 # Start the process of creating the table

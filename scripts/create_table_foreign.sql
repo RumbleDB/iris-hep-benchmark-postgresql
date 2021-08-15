@@ -92,7 +92,7 @@ CREATE FOREIGN TABLE IF NOT EXISTS Run2012B_SingleMu_%(data_size)s_raw (
 )
 SERVER parquet_srv
 OPTIONS (
-    filename '/data/Run2012B_SingleMu_%(data_size)s.parquet'
+    filename '%(data_path)s'
 );
 
 
