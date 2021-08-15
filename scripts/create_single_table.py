@@ -45,7 +45,8 @@ args = parser.parse_args()
 
 conf = {
   "data_size": args.data_size,
-  "data_path": ' '.join([args.path for _ in range(max(1, args.data_size / SF1))])
+  "data_path": ' '.join([args.path for _ in range(max(1, 
+    int(int(args.data_size) / SF1)))])
 }
 
 # Start the process of creating the table
